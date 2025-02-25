@@ -7,7 +7,7 @@ int main(void) {
 
    Lexer l(chaine);
 
-   Symbole * s;
+   SymboleSimple * s;
    while(*(s=l.Consulter())!=FIN) {
       s->Affiche();
       cout<<endl;

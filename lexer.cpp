@@ -1,28 +1,29 @@
 #include "lexer.h"
+#include "symboleSimple.h"
 
-Symbole * Lexer::Consulter() {
+SymboleSimple * Lexer::Consulter() {
    if (!tampon) {
 
       if (tete==flux.length())
-         tampon = new Symbole(FIN);
+         tampon = new SymboleSimple(FIN);
       else
       {
 
          switch (flux[tete]) {
             case '(':
-               tampon = new Symbole(OPENPAR);
+               tampon = new SymboleSimple(OPENPAR);
                tete++;
                break;
             case ')':
-               tampon = new Symbole(CLOSEPAR);
+               tampon = new SymboleSimple(CLOSEPAR);
                tete++;
                break;
             case '*':
-               tampon = new Symbole(MULT);
+               tampon = new SymboleSimple(MULT);
                tete++;
                break;
             case '+':
-               tampon = new Symbole(PLUS);
+               tampon = new SymboleSimple(PLUS);
                tete++;
                break;
             default:
@@ -37,7 +38,7 @@ Symbole * Lexer::Consulter() {
                   tampon = new Entier(resultat);
                }
                else {
-                  tampon = new Symbole(ERREUR);
+                  tampon = new SymboleSimple(ERREUR);
                }
          }
       }
