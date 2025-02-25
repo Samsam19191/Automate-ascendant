@@ -2,7 +2,7 @@
 EXEC = programme
 
 # Fichiers sources
-SRC = main.cpp symbole.cpp lexer.cpp expr.cpp automate.cpp
+SRC = main.cpp symbole.cpp lexer.cpp expr.cpp automate.cpp etats.cpp
 
 # Fichiers objets
 OBJ = $(SRC:.cpp=.o)
