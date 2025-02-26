@@ -5,7 +5,8 @@
 
 
 int main(void) {
-   string chaine("7+8");
+   //string chaine("7+8");
+   string chaine("2*3+4");
    Automate automate(chaine);
    automate.lecture();
 

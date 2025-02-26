@@ -18,6 +18,7 @@ Symbole * Automate::popSymbol() {
     Symbole *s = pileSymbole.top();
     s->Affiche();
     pileSymbole.pop();
+
     if (s->operator int() == INT) {
             Expr * p = new Nombre(((Entier*)s)->getValeur());
             cout << "Nombre : " << p->eval() << endl;
@@ -30,7 +31,6 @@ Symbole * Automate::popSymbol() {
 
 
 void Automate::popAndDestroySymbol() {
-    pileSymbole.pop();
     pileSymbole.pop();
 }
 
@@ -46,12 +46,13 @@ Automate::~Automate() {
 void Automate::lecture() {
     Symbole * s = lexer->Consulter();
     int n = 0;
-    while (!this->stop && n <= 7)
+    while (!this->stop and n<=10)
     {
         s = lexer->Consulter();
         this->infoEtat();
         s->Affiche();
 
+        std::cout << "Taille pile symbole : " << pileSymbole.size() << std::endl;
         cout << endl << "+++++++" << endl;
         pileEtat.top()->transition(*this,s);
         n++;
@@ -72,12 +73,13 @@ void Automate::reduction(int n,Symbole * s) {
         delete(pileEtat.top());
         pileEtat.pop();
     }
-    pileSymbole.push(s);
-
-//    Expr* result = (Expr*)pileSymbole.top();
-//    cout << "Resultat : " << result->eval() << endl;
+    Expr* result = dynamic_cast<Expr*>(s);
+    cout << "Resultat : " << result->eval() << endl;
 
     pileEtat.top()->transition(*this,s);
+
+    pileSymbole.top()->Affiche();
+    pileEtat.top()->print();
 }
 
 

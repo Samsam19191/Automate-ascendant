@@ -42,6 +42,7 @@ bool E0::transition(Automate & automate, Symbole * s) {
         automate.decalage(s, new E2);
         break;
     default :
+        cout << "Vers la fin" << endl;
         automate.transitionsimple(s, new E1);
         break;
     }
@@ -86,7 +87,7 @@ bool E3::transition(Automate & automate, Symbole * s) {
         break;
     case MULT:
         s1 = (Expr*) automate.popSymbol();
-        automate.reduction(1,new Nombre(s1->eval()));
+        automate.reduction(1,s1);
         break;
     case CLOSEPAR :
         s1 = (Expr*) automate.popSymbol();
@@ -153,13 +154,10 @@ bool E7::transition(Automate & automate, Symbole * s) {
         s1 = (Expr*) automate.popSymbol();
         automate.popAndDestroySymbol();
         s2 = (Expr*) automate.popSymbol();
-        automate.reduction(2,new ExprPlus(s2,s1));
+        automate.reduction(3,new ExprPlus(s2,s1));
         break;
     case MULT:
-        s1 = (Expr*) automate.popSymbol();
-        automate.popAndDestroySymbol();
-        s2 = (Expr*) automate.popSymbol();
-        automate.reduction(2,new ExprPlus(s2,s1));
+        automate.decalage(s, new E5);
         break;
     case CLOSEPAR:
         s1 = (Expr*) automate.popSymbol();
@@ -204,6 +202,7 @@ bool E8::transition(Automate & automate, Symbole * s) {
         s1 = (Expr*) automate.popSymbol();
         automate.popAndDestroySymbol();
         s2 = (Expr*) automate.popSymbol();
+        cout << "eeeeeeee";
         automate.reduction(3,new ExprMult(s2,s1));
         break;
     }
