@@ -1,14 +1,29 @@
-enum Identificateurs { OPENPAR, CLOSEPAR, PLUS, MULT, INT, FIN, EXPR, ERREUR };
+#pragma once
 
-const string Etiquettes[] = { "OPENPAR", "CLOSEPAR", "PLUS", "MULT", "INT", "FIN", "EXPR", "ERREUR" };
+#include <string>
+using namespace std;
+
+enum Identificateurs { OPENPAR, CLOSEPAR, PLUS, MULT, INT, FIN, ERREUR, EXPR };
+
+const string Etiquettes[] = { "OPENPAR", "CLOSEPAR", "PLUS", "MULT", "INT", "FIN", "ERREUR", "EXPR" };
 
 class Symbole {
-    protected:
-    int ident;
-    bool terminal;
-    public:
-    Symbole(int id) : ident(id) {}
-    virtual ~Symbole() {}
-    void print();
-    operator int() const { return ident; }
-    };
+   public:
+      Symbole(int i) : ident(i) {  }
+      virtual ~Symbole() { }
+      operator int() const { return ident; }
+      virtual void Affiche();
+   protected:
+      int ident;
+};
+
+class Entier : public Symbole {
+   public:
+      Entier(int v) : Symbole(INT), valeur(v) { }
+      ~Entier() { }
+      virtual void Affiche();
+      int getValeur() { return valeur; }
+   protected:
+      int valeur;
+};
+

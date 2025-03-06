@@ -1,9 +1,27 @@
-#include "symboleSimple.h"
 #include "expr.h"
-#include "exprPlus.h"
-#include <iostream>
 
-double ExprPlus::eval(const map<string, double> & valeurs) {
-    
-    return 0;
+Expr::~Expr() {}
+
+ExprBin::~ExprBin() {
+    delete gauche;
+    delete droite;
 }
+
+ExprMult::~ExprMult() {}
+
+ExprPlus::~ExprPlus() {}
+
+Nombre::~Nombre() {}
+
+double ExprPlus::eval() {
+    return gauche->eval() + droite->eval();
+}
+
+double ExprMult::eval() {
+    return gauche->eval() * droite->eval();
+}
+
+double Nombre::eval() {
+    return valeur;
+}
+

@@ -10,11 +10,11 @@ class Lexer {
       Lexer(string s) : flux(s), tete(0), tampon(nullptr) { }
       ~Lexer() { }
 
-      SymboleSimple * Consulter();
+      Symbole * Consulter();
       void Avancer();
 
    protected:
       string flux;
       int tete;
-      SymboleSimple * tampon;
+      Symbole * tampon;
 };
