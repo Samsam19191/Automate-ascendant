@@ -9,6 +9,3 @@ void Entier::Affiche() {
    Symbole::Affiche();
    cout<<"("<<valeur<<")";
 }
-
-
-
