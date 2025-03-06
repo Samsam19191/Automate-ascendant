@@ -1,5 +1,6 @@
 #include "etats.h"
 #include "automate.h"
+#include "exceptions.h"
 #include "expr.h"
 #include "symbole.h"
 #include <iostream>
@@ -39,9 +40,12 @@ bool E0::transition(Automate &automate, Symbole *s) {
   case OPENPAR:
     automate.decalage(s, new E2);
     break;
-  default:
+  case EXPR:
     automate.transitionsimple(s, new E1);
     break;
+  default:
+    // Erreur
+    throw TransitionException();
   }
   return false;
 };
@@ -56,6 +60,10 @@ bool E1::transition(Automate &automate, Symbole *s) {
     break;
   case FIN:
     automate.accepter();
+    break;
+  default:
+    // Erreur
+    throw TransitionException();
   }
   return false;
 };
@@ -68,32 +76,44 @@ bool E2::transition(Automate &automate, Symbole *s) {
   case OPENPAR:
     automate.decalage(s, new E2);
     break;
-  default:
+  case EXPR:
     automate.transitionsimple(s, new E6);
     break;
+  default:
+    // Erreur
+    throw TransitionException();
   }
   return false;
 };
 
 bool E3::transition(Automate &automate, Symbole *s) {
   Expr *s1 = nullptr;
-  switch (*s) {
-  case PLUS:
-    s1 = (Expr *)automate.popSymbol();
-    automate.reduction(1, s1);
-    break;
-  case MULT:
-    s1 = (Expr *)automate.popSymbol();
-    automate.reduction(1, s1);
-    break;
-  case CLOSEPAR:
-    s1 = (Expr *)automate.popSymbol();
-    automate.reduction(1, new Nombre(s1->eval()));
-    break;
-  case FIN:
-    s1 = (Expr *)automate.popSymbol();
-    automate.reduction(1, new Nombre(s1->eval()));
-    break;
+  try {
+    switch (*s) {
+    case PLUS:
+      s1 = (Expr *)automate.popSymbol();
+      automate.reduction(1, s1);
+      break;
+    case MULT:
+      s1 = (Expr *)automate.popSymbol();
+      automate.reduction(1, s1);
+      break;
+    case CLOSEPAR:
+      s1 = (Expr *)automate.popSymbol();
+      automate.reduction(1, new Nombre(s1->eval()));
+      break;
+    case FIN:
+      s1 = (Expr *)automate.popSymbol();
+      automate.reduction(1, new Nombre(s1->eval()));
+      break;
+    default:
+      // Erreur
+      throw TransitionException();
+    }
+  } catch (const std::exception &e) {
+    // Gestion d'erreur popSymbol
+    throw std::runtime_error(std::string("Erreur de transition: ") + e.what() +
+                             "\n");
   }
   return false;
 };
@@ -106,9 +126,12 @@ bool E4::transition(Automate &automate, Symbole *s) {
   case OPENPAR:
     automate.decalage(s, new E2);
     break;
-  default:
+  case EXPR:
     automate.transitionsimple(s, new E7);
     break;
+  default:
+    // Erreur
+    throw TransitionException();
   }
   return false;
 };
@@ -121,9 +144,12 @@ bool E5::transition(Automate &automate, Symbole *s) {
   case OPENPAR:
     automate.decalage(s, new E2);
     break;
-  default:
+  case EXPR:
     automate.transitionsimple(s, new E8);
     break;
+  default:
+    // Erreur
+    throw TransitionException();
   }
   return false;
 };
@@ -139,6 +165,9 @@ bool E6::transition(Automate &automate, Symbole *s) {
   case CLOSEPAR:
     automate.decalage(s, new E9);
     break;
+  default:
+    // Erreur
+    throw TransitionException();
   }
   return false;
 };
@@ -146,28 +175,37 @@ bool E6::transition(Automate &automate, Symbole *s) {
 bool E7::transition(Automate &automate, Symbole *s) {
   Expr *s1 = nullptr;
   Expr *s2 = nullptr;
-  switch (*s) {
-  case PLUS:
-    s1 = (Expr *)automate.popSymbol();
-    automate.popAndDestroySymbol();
-    s2 = (Expr *)automate.popSymbol();
-    automate.reduction(3, new ExprPlus(s2, s1));
-    break;
-  case MULT:
-    automate.decalage(s, new E5);
-    break;
-  case CLOSEPAR:
-    s1 = (Expr *)automate.popSymbol();
-    automate.popAndDestroySymbol();
-    s2 = (Expr *)automate.popSymbol();
-    automate.reduction(3, new ExprPlus(s2, s1));
-    break;
-  case FIN:
-    s1 = (Expr *)automate.popSymbol();
-    automate.popAndDestroySymbol();
-    s2 = (Expr *)automate.popSymbol();
-    automate.reduction(3, new ExprPlus(s2, s1));
-    break;
+  try {
+    switch (*s) {
+    case PLUS:
+      s1 = (Expr *)automate.popSymbol();
+      automate.popAndDestroySymbol();
+      s2 = (Expr *)automate.popSymbol();
+      automate.reduction(3, new ExprPlus(s2, s1));
+      break;
+    case MULT:
+      automate.decalage(s, new E5);
+      break;
+    case CLOSEPAR:
+      s1 = (Expr *)automate.popSymbol();
+      automate.popAndDestroySymbol();
+      s2 = (Expr *)automate.popSymbol();
+      automate.reduction(3, new ExprPlus(s2, s1));
+      break;
+    case FIN:
+      s1 = (Expr *)automate.popSymbol();
+      automate.popAndDestroySymbol();
+      s2 = (Expr *)automate.popSymbol();
+      automate.reduction(3, new ExprPlus(s2, s1));
+      break;
+    default:
+      // Erreur
+      throw TransitionException();
+    }
+  } catch (const std::exception &e) {
+    // Gestion d'erreur popSymbol
+    throw std::runtime_error(std::string("Erreur de transition: ") + e.what() +
+                             "\n");
   }
   return false;
 };
@@ -175,62 +213,80 @@ bool E7::transition(Automate &automate, Symbole *s) {
 bool E8::transition(Automate &automate, Symbole *s) {
   Expr *s1 = nullptr;
   Expr *s2 = nullptr;
-  switch (*s) {
-  case PLUS:
-    s1 = (Expr *)automate.popSymbol();
-    automate.popAndDestroySymbol();
-    s2 = (Expr *)automate.popSymbol();
-    automate.reduction(3, new ExprMult(s2, s1));
-    break;
-  case MULT:
-    s1 = (Expr *)automate.popSymbol();
-    automate.popAndDestroySymbol();
-    s2 = (Expr *)automate.popSymbol();
-    automate.reduction(3, new ExprMult(s2, s1));
-    break;
-  case CLOSEPAR:
-    s1 = (Expr *)automate.popSymbol();
-    automate.popAndDestroySymbol();
-    s2 = (Expr *)automate.popSymbol();
-    automate.reduction(3, new ExprMult(s2, s1));
-    break;
-  case FIN:
-    s1 = (Expr *)automate.popSymbol();
-    automate.popAndDestroySymbol();
-    s2 = (Expr *)automate.popSymbol();
-    automate.reduction(3, new ExprMult(s2, s1));
-    break;
+  try {
+    switch (*s) {
+    case PLUS:
+      s1 = (Expr *)automate.popSymbol();
+      automate.popAndDestroySymbol();
+      s2 = (Expr *)automate.popSymbol();
+      automate.reduction(3, new ExprMult(s2, s1));
+      break;
+    case MULT:
+      s1 = (Expr *)automate.popSymbol();
+      automate.popAndDestroySymbol();
+      s2 = (Expr *)automate.popSymbol();
+      automate.reduction(3, new ExprMult(s2, s1));
+      break;
+    case CLOSEPAR:
+      s1 = (Expr *)automate.popSymbol();
+      automate.popAndDestroySymbol();
+      s2 = (Expr *)automate.popSymbol();
+      automate.reduction(3, new ExprMult(s2, s1));
+      break;
+    case FIN:
+      s1 = (Expr *)automate.popSymbol();
+      automate.popAndDestroySymbol();
+      s2 = (Expr *)automate.popSymbol();
+      automate.reduction(3, new ExprMult(s2, s1));
+      break;
+    default:
+      // Erreur
+      throw TransitionException();
+    }
+  } catch (const std::exception &e) {
+    // Gestion d'erreur popSymbol
+    throw std::runtime_error(std::string("Erreur de transition: ") + e.what() +
+                             "\n");
   }
   return false;
 };
 
 bool E9::transition(Automate &automate, Symbole *s) {
   Expr *s1 = nullptr;
-  switch (*s) {
-  case PLUS:
-    automate.popAndDestroySymbol();
-    s1 = (Expr *)automate.popSymbol();
-    automate.popAndDestroySymbol();
-    automate.reduction(3, new Nombre(s1->eval()));
-    break;
-  case MULT:
-    automate.popAndDestroySymbol();
-    s1 = (Expr *)automate.popSymbol();
-    automate.popAndDestroySymbol();
-    automate.reduction(3, new Nombre(s1->eval()));
-    break;
-  case CLOSEPAR:
-    automate.popAndDestroySymbol();
-    s1 = (Expr *)automate.popSymbol();
-    automate.popAndDestroySymbol();
-    automate.reduction(3, new Nombre(s1->eval()));
-    break;
-  case FIN:
-    automate.popAndDestroySymbol();
-    s1 = (Expr *)automate.popSymbol();
-    automate.popAndDestroySymbol();
-    automate.reduction(3, new Nombre(s1->eval()));
-    break;
+  try {
+    switch (*s) {
+    case PLUS:
+      automate.popAndDestroySymbol();
+      s1 = (Expr *)automate.popSymbol();
+      automate.popAndDestroySymbol();
+      automate.reduction(3, new Nombre(s1->eval()));
+      break;
+    case MULT:
+      automate.popAndDestroySymbol();
+      s1 = (Expr *)automate.popSymbol();
+      automate.popAndDestroySymbol();
+      automate.reduction(3, new Nombre(s1->eval()));
+      break;
+    case CLOSEPAR:
+      automate.popAndDestroySymbol();
+      s1 = (Expr *)automate.popSymbol();
+      automate.popAndDestroySymbol();
+      automate.reduction(3, new Nombre(s1->eval()));
+      break;
+    case FIN:
+      automate.popAndDestroySymbol();
+      s1 = (Expr *)automate.popSymbol();
+      automate.popAndDestroySymbol();
+      automate.reduction(3, new Nombre(s1->eval()));
+      break;
+    default:
+      // Erreur
+      throw TransitionException();
+    }
+  } catch (const std::exception &e) {
+    // Gestion d'erreur popSymbol
+    throw std::runtime_error(std::string("Erreur de transition: ") + e.what() +
+                             "\n");
   }
   return false;
 };

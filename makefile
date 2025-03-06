@@ -25,11 +25,16 @@ $(EXEC): $(OBJ)
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+# Nettoyage des fichiers objets et de l'exécutable
 clean:
 	rm -f $(OBJ) $(EXEC)
 
 # Nettoyage avancé
 mrproper: clean
 	rm -f *~
+
+# Exécution de Valgrind pour détecter les fuites de mémoire
+valgrind: $(EXEC)
+	valgrind --leak-check=full --show-leak-kinds=all ./$(EXEC)
 
 .PHONY: all clean mrproper

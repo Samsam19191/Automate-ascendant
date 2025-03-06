@@ -40,12 +40,7 @@ int main(void) {
 
     // Création de l'automate avec l'expression saisie
     Automate automate(chaine);
-    try {
-      automate.lecture();
-      cout << "\n✅ Analyse terminée avec succès !" << endl;
-    } catch (const exception &e) {
-      cerr << "\n❌ Erreur durant l'analyse : " << e.what() << endl;
-    }
+    automate.lecture();
   }
 
   return 0;
