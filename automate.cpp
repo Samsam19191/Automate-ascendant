@@ -3,6 +3,7 @@
 #include "exceptions.h"
 #include "expr.h"
 #include "symbole.h"
+#include <iomanip>
 #include <iostream>
 
 Automate::Automate(std::string input) {
@@ -51,21 +52,36 @@ void Automate::lecture() {
     while (true) {
       s = lexer->Consulter();
       this->infoEtat();
-      s->Affiche();
 
-      cout << endl << "+++++++" << endl;
+      cout << endl << "++++++++++++++++++++++++++" << endl << endl;
 
       pileEtat.top()->transition(*this, s);
     }
   } catch (const AcceptException &e) {
     cout << e.what() << endl;
   } catch (const TransitionException &e) {
+    while (!pileSymbole.empty()) {
+      delete pileSymbole.top();
+      pileSymbole.pop();
+    }
     cerr << e.what() << endl;
   } catch (const std::runtime_error &e) {
+    while (!pileSymbole.empty()) {
+      delete pileSymbole.top();
+      pileSymbole.pop();
+    }
     cerr << "Runtime error: " << e.what() << endl;
   } catch (const std::exception &e) {
+    while (!pileSymbole.empty()) {
+      delete pileSymbole.top();
+      pileSymbole.pop();
+    }
     cerr << "Exception: " << e.what() << endl;
   } catch (...) {
+    while (!pileSymbole.empty()) {
+      delete pileSymbole.top();
+      pileSymbole.pop();
+    }
     cerr << "Unknown exception occurred" << endl;
   }
 }
@@ -93,18 +109,44 @@ void Automate::transitionsimple(Symbole *s, Etat *e) {
 void Automate::accepter() {
   Expr *result = (Expr *)pileSymbole.top();
   cout << "Résultat final : " << result->eval() << endl;
+  delete result;
   throw AcceptException();
 }
 
 void Automate::infoEtat() {
-  cout << "Pile Etat | Pile Symbole | Symbole Actuel" << endl;
-  pileEtat.top()->print();
-  cout << " | ";
-  if (!pileSymbole.empty()) {
-    pileSymbole.top()->Affiche();
-    cout << " | ";
+  const int largeurColonne = 15;
+
+  // en-têtes
+  std::cout << std::left << std::setw(largeurColonne) << "Pile Etat"
+            << std::left << std::setw(largeurColonne) << "Pile Symbole"
+            << "Symbole Actuel" << std::endl;
+
+  // Pile Etat
+  if (!pileEtat.empty()) {
+    std::cout << std::left << std::setw(largeurColonne);
+
+    pileEtat.top()->print();
   } else {
-    std::cout << "empty"
-              << " | ";
+    std::cout << std::left << std::setw(largeurColonne) << "empty";
   }
+
+  // Pile Symbole
+  if (!pileSymbole.empty()) {
+    std::cout << std::left << std::setw(largeurColonne);
+
+    pileSymbole.top()->Affiche();
+  } else {
+    std::cout << std::left << std::setw(largeurColonne) << "empty";
+  }
+
+  // Symbole Actuel
+  if (lexer->Consulter() != nullptr) {
+    std::cout << std::left << std::setw(largeurColonne);
+
+    lexer->Consulter()->Affiche();
+  } else {
+    std::cout << "empty";
+  }
+
+  std::cout << std::endl;
 }

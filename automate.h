@@ -23,5 +23,4 @@ class Automate {
         Lexer * lexer;
         std::stack<Symbole*> pileSymbole;
         std::stack<Etat*> pileEtat;
-        bool stop = false; //TODO trouver une meilleur solution pour arrêter la boucle de lecture
 };

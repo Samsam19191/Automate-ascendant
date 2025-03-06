@@ -45,6 +45,7 @@ bool E0::transition(Automate &automate, Symbole *s) {
     break;
   default:
     // Erreur
+    delete s;
     throw TransitionException();
   }
   return false;
@@ -59,10 +60,12 @@ bool E1::transition(Automate &automate, Symbole *s) {
     automate.decalage(s, new E5);
     break;
   case FIN:
+    delete s;
     automate.accepter();
     break;
   default:
     // Erreur
+    delete s;
     throw TransitionException();
   }
   return false;
@@ -81,6 +84,7 @@ bool E2::transition(Automate &automate, Symbole *s) {
     break;
   default:
     // Erreur
+    delete s;
     throw TransitionException();
   }
   return false;
@@ -101,10 +105,12 @@ bool E3::transition(Automate &automate, Symbole *s) {
     case CLOSEPAR:
       s1 = (Expr *)automate.popSymbol();
       automate.reduction(1, new Nombre(s1->eval()));
+      delete s1;
       break;
     case FIN:
       s1 = (Expr *)automate.popSymbol();
       automate.reduction(1, new Nombre(s1->eval()));
+      delete s1;
       break;
     default:
       // Erreur
@@ -131,6 +137,7 @@ bool E4::transition(Automate &automate, Symbole *s) {
     break;
   default:
     // Erreur
+    delete s;
     throw TransitionException();
   }
   return false;
@@ -149,6 +156,7 @@ bool E5::transition(Automate &automate, Symbole *s) {
     break;
   default:
     // Erreur
+    delete s;
     throw TransitionException();
   }
   return false;
@@ -167,6 +175,7 @@ bool E6::transition(Automate &automate, Symbole *s) {
     break;
   default:
     // Erreur
+    delete s;
     throw TransitionException();
   }
   return false;
@@ -260,24 +269,28 @@ bool E9::transition(Automate &automate, Symbole *s) {
       s1 = (Expr *)automate.popSymbol();
       automate.popAndDestroySymbol();
       automate.reduction(3, new Nombre(s1->eval()));
+      delete s1;
       break;
     case MULT:
       automate.popAndDestroySymbol();
       s1 = (Expr *)automate.popSymbol();
       automate.popAndDestroySymbol();
       automate.reduction(3, new Nombre(s1->eval()));
+      delete s1;
       break;
     case CLOSEPAR:
       automate.popAndDestroySymbol();
       s1 = (Expr *)automate.popSymbol();
       automate.popAndDestroySymbol();
       automate.reduction(3, new Nombre(s1->eval()));
+      delete s1;
       break;
     case FIN:
       automate.popAndDestroySymbol();
       s1 = (Expr *)automate.popSymbol();
       automate.popAndDestroySymbol();
       automate.reduction(3, new Nombre(s1->eval()));
+      delete s1;
       break;
     default:
       // Erreur
